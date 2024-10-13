@@ -12,11 +12,10 @@ type HttpCfg struct {
 }
 
 type router struct {
-	Method   http.HttpMethod        `yaml:"method"`
-	GetType  http.GetType           `yaml:"get_type"`
-	Variable map[string]interface{} `yaml:"variable"`
-
-	// form or url
+	Method   http.HttpMethod `yaml:"method"`
+	GetType  http.GetType    `yaml:"get_type"`
+	Variable []string        `yaml:"variable"`
+	//UrlVariable []string        `yaml:"url_variable"`
 }
 
 type Auth struct {

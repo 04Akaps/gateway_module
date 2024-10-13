@@ -11,7 +11,9 @@ type httpClient struct {
 }
 
 type HttpClientImpl interface {
-	GET(url string, buffer interface{}, key, value []string) error
+	QUERY_GET(url string, buffer interface{}, key, value []string) error
+	URL_GET(url string, buffer interface{}) error
+
 	POST(url string, req, buffer interface{}) error
 	PUT(url string, req, buffer interface{}) error
 	DELETE(url string, req, buffer interface{}) error
@@ -42,7 +44,11 @@ func HttpClient(cfg config.HttpCfg) HttpClientImpl {
 	return &httpClient{client}
 }
 
-func (h httpClient) GET(url string, buffer interface{}, key, value []string) error {
+func (h httpClient) QUERY_GET(url string, buffer interface{}, key, value []string) error {
+	return nil
+}
+
+func (h httpClient) URL_GET(url string, buffer interface{}) error {
 	return nil
 }
 
