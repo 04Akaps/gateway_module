@@ -1,0 +1,22 @@
+app:
+  name: "test"
+  version: v1
+  port: "8080"
+http:
+  - base_url: "https://api.example.com"
+    router:
+      method: "GET"
+    path: "/v1/resource"
+    auth:
+      key: "Authorization"
+      value: "Bearer my-secret-token"
+    header:
+      Content-Type: "application/json"
+      Accept: "application/json"
+
+#  - base_url: "https://api.example.com"
+#    method: "POST"
+#    path: "/v1/resource"
+#    header:
+#      Content-Type: "application/json"
+#      X-Custom-Header: "custom-value"
