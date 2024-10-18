@@ -62,10 +62,22 @@ func NewHttpClient(
 
 func (h *HttpClient) GET(c *fiber.Ctx, url string, router config.Router) error {
 	var buffer interface{}
+	var err error
+	var req *resty.Request
+	var resp *resty.Response
 
-	req := h.getRequest(router).SetResult(&buffer)
-	resp, err := req.Get(url)
 	defer h.handleRequest(resp, req)
+
+	_, err = common.CB.Execute(func() ([]byte, error) {
+		req = h.getRequest(router).SetResult(&buffer)
+		resp, err = req.Get(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
@@ -76,10 +88,22 @@ func (h *HttpClient) GET(c *fiber.Ctx, url string, router config.Router) error {
 
 func (h *HttpClient) POST(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
 	var buffer interface{}
+	var err error
+	var req *resty.Request
+	var resp *resty.Response
 
-	req := h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
-	resp, err := req.Post(url)
 	defer h.handleRequest(resp, req)
+
+	_, err = common.CB.Execute(func() ([]byte, error) {
+		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		resp, err = req.Post(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
@@ -90,10 +114,22 @@ func (h *HttpClient) POST(c *fiber.Ctx, url string, requestBody interface{}, rou
 
 func (h *HttpClient) PUT(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
 	var buffer interface{}
+	var err error
+	var req *resty.Request
+	var resp *resty.Response
 
-	req := h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
-	resp, err := req.Put(url)
 	defer h.handleRequest(resp, req)
+
+	_, err = common.CB.Execute(func() ([]byte, error) {
+		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		resp, err = req.Put(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
@@ -104,10 +140,22 @@ func (h *HttpClient) PUT(c *fiber.Ctx, url string, requestBody interface{}, rout
 
 func (h *HttpClient) DELETE(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
 	var buffer interface{}
+	var err error
+	var req *resty.Request
+	var resp *resty.Response
 
-	req := h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
-	resp, err := req.Delete(url)
 	defer h.handleRequest(resp, req)
+
+	_, err = common.CB.Execute(func() ([]byte, error) {
+		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		resp, err = req.Delete(url)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
