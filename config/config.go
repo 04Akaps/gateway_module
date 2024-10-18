@@ -14,7 +14,8 @@ type Config struct {
 		Port    string `yaml:"port"`
 	} `yaml:"app"`
 
-	Http []HttpCfg `yaml:"http"`
+	Http     HttpCfg   `yaml:"http"`
+	Producer *Producer `yaml:"kafka"`
 }
 
 func NewCfg(path string) Config {

@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/04Akaps/gateway_module/app/client"
 	"github.com/04Akaps/gateway_module/config"
 	"github.com/04Akaps/gateway_module/log"
 	"github.com/04Akaps/gateway_module/types/http"
@@ -18,16 +19,14 @@ type Router struct {
 	cfg    config.Config
 	engine *fiber.App
 
-	getMapper    []get
-	postMapper   []post
-	deleteMapper []delete
-	putMapper    []put
+	client client.HttpClient
 }
 
-func NewRouter(cfg config.Config) Router {
+func NewRouter(cfg config.Config, client client.HttpClient) Router {
 	r := Router{
-		cfg:  cfg,
-		port: fmt.Sprintf(":%s", cfg.App.Port),
+		cfg:    cfg,
+		port:   fmt.Sprintf(":%s", cfg.App.Port),
+		client: client,
 	}
 
 	r.engine = fiber.New()
@@ -46,31 +45,35 @@ func NewRouter(cfg config.Config) Router {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "ok"})
 	})
 
-	// TODO HttpCfg의 설정에 따라, HttpClient를 하나씩 배정받아서, Router를 등록해 줘야 한다.
-
-	for _, v := range cfg.Http {
+	for _, v := range cfg.Http.Router {
 		r.registerRouter(v)
 	}
 
 	return r
 }
 
-func (r Router) registerRouter(v config.HttpCfg) {
-	method := v.Router.Method
+func (r Router) registerRouter(v config.Router) {
+	method := v.Method
 
 	switch method {
 	case http.GET:
-		r.getMapper = append(r.getMapper, NewGet(v, r.engine))
+		handler := NewGet(v, r.client)
+		r.engine.Get(v.Path, handler)
 	case http.POST:
-		r.postMapper = append(r.postMapper, NewPost(v, r.engine))
+		handler := NewPost(v, r.client)
+		r.engine.Post(v.Path, handler)
 	case http.DELETE:
-		r.deleteMapper = append(r.deleteMapper, NewDelete(v, r.engine))
+		handler := NewDelete(v, r.client)
+		r.engine.Delete(v.Path, handler)
 	case http.PUT:
-		r.putMapper = append(r.putMapper, NewPut(v, r.engine))
+		handler := NewPut(v, r.client)
+		r.engine.Put(v.Path, handler)
 	default:
 		log.Log.Panic("Failed to find method", zap.String("method", method.ToString()))
 	}
 
 }
 
-// Run
+func (r Router) Run() error {
+	return r.engine.Listen(r.port)
+}

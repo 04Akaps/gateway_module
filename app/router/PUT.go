@@ -1,30 +1,37 @@
 package router
 
 import (
+	"github.com/04Akaps/gateway_module/app/client"
 	"github.com/04Akaps/gateway_module/config"
+	"github.com/04Akaps/gateway_module/log"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type put struct {
-	engine *fiber.App
-	cfg    config.HttpCfg
-
-	handler func(c *fiber.Ctx) error
+	cfg    config.Router
+	client client.HttpClient
 }
 
-func NewPut(cfg config.HttpCfg, engine *fiber.App) put {
-	h := put{
-		cfg:    cfg,
-		engine: engine,
+func NewPut(
+	cfg config.Router,
+	client client.HttpClient,
+) func(c *fiber.Ctx) error {
+	if len(cfg.Variable) != 0 {
+		log.Log.Panic("we don't support variable in put request", zap.String("path", cfg.Path))
 	}
 
-	h.handler = func(c *fiber.Ctx) error {
-		// TODO Handler
+	p := put{cfg: cfg, client: client}
 
-		return nil
+	handler := func(c *fiber.Ctx) error {
+		return p.handleRequest(c)
 	}
 
-	engine.Post(h.cfg.Path, h.handler)
+	return handler
+}
 
-	return h
+func (p put) handleRequest(c *fiber.Ctx) error {
+	path := p.cfg.Path
+	apiResult := p.client.PUT(c, path, c.Request().Body(), p.cfg)
+	return apiResult
 }

@@ -1,0 +1,27 @@
+app:
+  name: "<Gatew Moudle Name>"
+  version: v1
+  port: "<Gatway Port>"
+http:
+  base_url: "<Internal Service Base URL>"
+  router:
+    - method: "<Method>"
+      get_type: "<Type>"
+      path: "<Optional path>"
+      header:
+        Content-Type: "application/json"
+        Accept: "application/json"
+        # Add header you need
+    - method: "<Method>"
+      get_type: "<Type>"
+      path: "<Optional path>"
+      variable:
+        - "address"
+        - "tid"
+        # it is valid when get_type is query
+kafka:
+  url: "<Kafka Producer Url>"
+  client_id: "<Producer client id>"
+  acks: "<producer acks>"
+  topic: "<kafka topic>"
+  batch_time: "<Request Produce Batch Time>"
