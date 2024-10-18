@@ -27,7 +27,7 @@ var Cfg = fx.Module(
 var Producer = fx.Module(
 	"kafka_producer",
 	fx.Provide(func(cfg config.Config) kafka.Producer {
-		return kafka.NewProducer(cfg.Producer)
+		return kafka.NewProducer(*cfg.Producer)
 	}),
 )
 
