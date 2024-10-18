@@ -109,6 +109,8 @@ kafka:
 
 `gopkg.in/yaml.v2` : yaml 형태를 환경변수로써 관리하기 위해서 사용되었습니다.
 
+`cricuit-breaker` : MSA 아키텍처에서의 서버간 버그를 전파하지 않기 위해서 breaker를 추가 하였습니다.
+
 <br />
 
 ## 🛠️ 프로젝트 아키텍쳐
