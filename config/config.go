@@ -8,14 +8,18 @@ import (
 )
 
 type Config struct {
+	App []App `yaml:"app"`
+}
+
+type App struct {
 	App struct {
 		Name    string `yaml:"name"`
 		Version string `yaml:"version"`
 		Port    string `yaml:"port"`
 	} `yaml:"app"`
 
-	Http     HttpCfg   `yaml:"http"`
 	Producer *Producer `yaml:"kafka"`
+	Http     HttpCfg   `yaml:"http"`
 }
 
 func NewCfg(path string) Config {

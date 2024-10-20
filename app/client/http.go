@@ -20,7 +20,7 @@ const (
 
 type HttpClient struct {
 	client   *resty.Client
-	cfg      config.Config
+	cfg      config.App
 	producer kafka.Producer
 
 	batchTime float64
@@ -31,8 +31,8 @@ type HttpClient struct {
 }
 
 func NewHttpClient(
-	cfg config.Config,
-	producer kafka.Producer,
+	cfg config.App,
+	producer map[string]kafka.Producer,
 ) HttpClient {
 	batchTime := cfg.Producer.BatchTime
 
@@ -53,7 +53,7 @@ func NewHttpClient(
 	return HttpClient{
 		client:       client,
 		cfg:          cfg,
-		producer:     producer,
+		producer:     producer[cfg.App.Name],
 		batchTime:    batchTime,
 		mapper:       make([]ApiRequestTopic, 0), // 빈 슬라이스로 초기화
 		fetchChannel: make(chan ApiRequestTopic),

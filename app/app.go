@@ -9,12 +9,12 @@ import (
 )
 
 type App struct {
-	router router.Router
+	router map[string]router.Router
 }
 
 func NewApp(
 	lc fx.Lifecycle,
-	router router.Router,
+	router map[string]router.Router,
 ) App {
 	a := App{router: router}
 
@@ -28,11 +28,11 @@ func NewApp(
 
 func (a App) onStart(c context.Context) error {
 
-	go func() {
-		if err := a.router.Run(); err != nil {
-			log.Log.Panic("Failed start server")
+	for key, r := range a.router {
+		if err := r.Run(); err != nil {
+			log.Log.Panic("Failed start server", zap.String("key", key))
 		}
-	}()
+	}
 
 	return nil
 }

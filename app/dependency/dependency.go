@@ -26,21 +26,39 @@ var Cfg = fx.Module(
 
 var Producer = fx.Module(
 	"kafka_producer",
-	fx.Provide(func(cfg config.Config) kafka.Producer {
-		return kafka.NewProducer(*cfg.Producer)
+	fx.Provide(func(cfg config.Config) map[string]kafka.Producer {
+		clients := make(map[string]kafka.Producer, len(cfg.App))
+
+		for _, app := range cfg.App {
+			clients[app.App.Name] = kafka.NewProducer(*app.Producer)
+		}
+
+		return clients
 	}),
 )
 
 var HttpClient = fx.Module(
 	"http_client",
-	fx.Provide(func(cfg config.Config, producer kafka.Producer) client.HttpClient {
-		return client.NewHttpClient(cfg, producer)
+	fx.Provide(func(cfg config.Config, producer map[string]kafka.Producer) map[string]client.HttpClient {
+		clients := make(map[string]client.HttpClient, len(cfg.App))
+
+		for _, app := range cfg.App {
+			clients[app.App.Name] = client.NewHttpClient(app, producer)
+		}
+
+		return clients
 	}),
 )
 
 var Router = fx.Module(
 	"router",
-	fx.Provide(func(cfg config.Config, client client.HttpClient) router.Router {
-		return router.NewRouter(cfg, client)
+	fx.Provide(func(cfg config.Config, client map[string]client.HttpClient) map[string]router.Router {
+		clients := make(map[string]router.Router, len(cfg.App))
+
+		for _, app := range cfg.App {
+			clients[app.App.Name] = router.NewRouter(app, client)
+		}
+
+		return clients
 	}),
 )

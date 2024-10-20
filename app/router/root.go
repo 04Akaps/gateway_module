@@ -16,17 +16,17 @@ import (
 
 type Router struct {
 	port   string
-	cfg    config.Config
+	cfg    config.App
 	engine *fiber.App
 
 	client client.HttpClient
 }
 
-func NewRouter(cfg config.Config, client client.HttpClient) Router {
+func NewRouter(cfg config.App, client map[string]client.HttpClient) Router {
 	r := Router{
 		cfg:    cfg,
 		port:   fmt.Sprintf(":%s", cfg.App.Port),
-		client: client,
+		client: client[cfg.App.Name],
 	}
 
 	r.engine = fiber.New()
