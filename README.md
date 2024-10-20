@@ -22,6 +22,7 @@ Nginx, ApiSix와 같은 게이트웨이 역할을 할 수 있는 web-server입�
 
 <div align="center">
 1️⃣
+</br>
 </div>
 
 ```
@@ -40,6 +41,7 @@ app:
 
 <div align="center">
 2️⃣
+</br>
 </div>
 
 ```
@@ -73,6 +75,7 @@ http:
 
 <div align="center">
 3️⃣
+</br>
 </div>
 
 ```
