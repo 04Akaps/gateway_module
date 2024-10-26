@@ -64,8 +64,6 @@ func (h *HttpClient) GET(url string, router config.Router) (*resty.Response, err
 	var req *resty.Request
 	var resp *resty.Response
 
-	defer h.handleRequest(resp, req)
-
 	req = h.getRequest(router)
 	resp, err = req.Get(url)
 
@@ -80,6 +78,8 @@ func (h *HttpClient) GET(url string, router config.Router) (*resty.Response, err
 		return nil, nil
 	})
 
+	defer h.handleRequest(resp, req.Body)
+
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,6 @@ func (h *HttpClient) POST(url string, requestBody interface{}, router config.Rou
 	var req *resty.Request
 	var resp *resty.Response
 
-	defer h.handleRequest(resp, req)
-
 	_, err = common.CB.Execute(func() ([]byte, error) {
 		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Post(url)
@@ -104,6 +102,8 @@ func (h *HttpClient) POST(url string, requestBody interface{}, router config.Rou
 
 		return nil, nil
 	})
+
+	defer h.handleRequest(resp, req.Body)
 
 	if err != nil {
 		return nil, err
@@ -117,8 +117,6 @@ func (h *HttpClient) PUT(url string, requestBody interface{}, router config.Rout
 	var req *resty.Request
 	var resp *resty.Response
 
-	defer h.handleRequest(resp, req)
-
 	_, err = common.CB.Execute(func() ([]byte, error) {
 		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Put(url)
@@ -129,6 +127,8 @@ func (h *HttpClient) PUT(url string, requestBody interface{}, router config.Rout
 
 		return nil, nil
 	})
+
+	defer h.handleRequest(resp, req.Body)
 
 	if err != nil {
 		return nil, err
@@ -142,8 +142,6 @@ func (h *HttpClient) DELETE(url string, requestBody interface{}, router config.R
 	var req *resty.Request
 	var resp *resty.Response
 
-	defer h.handleRequest(resp, req)
-
 	_, err = common.CB.Execute(func() ([]byte, error) {
 		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Delete(url)
@@ -154,6 +152,8 @@ func (h *HttpClient) DELETE(url string, requestBody interface{}, router config.R
 
 		return nil, nil
 	})
+
+	defer h.handleRequest(resp, req.Body)
 
 	if err != nil {
 		return nil, err
