@@ -33,7 +33,7 @@ func (h *HttpClient) loopByBatchTime() {
 }
 
 func (h *HttpClient) handleRequest(resp *resty.Response, req interface{}) {
-	if h.cfg.Producer != nil {
+	if len(h.cfg.Producer.URL) > 0 {
 		h.mapper = append(h.mapper, NewApiRequestTopic(resp, req))
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/04Akaps/gateway_module/kafka"
 	"github.com/04Akaps/gateway_module/log"
 	"github.com/go-resty/resty/v2"
-	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"sync"
 )
@@ -60,16 +59,18 @@ func NewHttpClient(
 	}
 }
 
-func (h *HttpClient) GET(c *fiber.Ctx, url string, router config.Router) error {
-	var buffer interface{}
+func (h *HttpClient) GET(url string, router config.Router) (*resty.Response, error) {
 	var err error
 	var req *resty.Request
 	var resp *resty.Response
 
 	defer h.handleRequest(resp, req)
 
+	req = h.getRequest(router)
+	resp, err = req.Get(url)
+
 	_, err = common.CB.Execute(func() ([]byte, error) {
-		req = h.getRequest(router).SetResult(&buffer)
+		req = h.getRequest(router)
 		resp, err = req.Get(url)
 
 		if err != nil {
@@ -80,14 +81,13 @@ func (h *HttpClient) GET(c *fiber.Ctx, url string, router config.Router) error {
 	})
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
+		return nil, err
 	}
 
-	return c.Status(resp.StatusCode()).JSON(buffer)
+	return resp, nil
 }
 
-func (h *HttpClient) POST(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
-	var buffer interface{}
+func (h *HttpClient) POST(url string, requestBody interface{}, router config.Router) (*resty.Response, error) {
 	var err error
 	var req *resty.Request
 	var resp *resty.Response
@@ -95,7 +95,7 @@ func (h *HttpClient) POST(c *fiber.Ctx, url string, requestBody interface{}, rou
 	defer h.handleRequest(resp, req)
 
 	_, err = common.CB.Execute(func() ([]byte, error) {
-		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Post(url)
 
 		if err != nil {
@@ -106,14 +106,13 @@ func (h *HttpClient) POST(c *fiber.Ctx, url string, requestBody interface{}, rou
 	})
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
+		return nil, err
 	}
 
-	return c.Status(resp.StatusCode()).JSON(buffer)
+	return resp, nil
 }
 
-func (h *HttpClient) PUT(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
-	var buffer interface{}
+func (h *HttpClient) PUT(url string, requestBody interface{}, router config.Router) (*resty.Response, error) {
 	var err error
 	var req *resty.Request
 	var resp *resty.Response
@@ -121,7 +120,7 @@ func (h *HttpClient) PUT(c *fiber.Ctx, url string, requestBody interface{}, rout
 	defer h.handleRequest(resp, req)
 
 	_, err = common.CB.Execute(func() ([]byte, error) {
-		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Put(url)
 
 		if err != nil {
@@ -132,14 +131,13 @@ func (h *HttpClient) PUT(c *fiber.Ctx, url string, requestBody interface{}, rout
 	})
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
+		return nil, err
 	}
 
-	return c.Status(resp.StatusCode()).JSON(buffer)
+	return resp, nil
 }
 
-func (h *HttpClient) DELETE(c *fiber.Ctx, url string, requestBody interface{}, router config.Router) error {
-	var buffer interface{}
+func (h *HttpClient) DELETE(url string, requestBody interface{}, router config.Router) (*resty.Response, error) {
 	var err error
 	var req *resty.Request
 	var resp *resty.Response
@@ -147,7 +145,7 @@ func (h *HttpClient) DELETE(c *fiber.Ctx, url string, requestBody interface{}, r
 	defer h.handleRequest(resp, req)
 
 	_, err = common.CB.Execute(func() ([]byte, error) {
-		req = h.getRequest(router).SetResult(&buffer).SetBody(requestBody)
+		req = h.getRequest(router).SetBody(requestBody)
 		resp, err = req.Delete(url)
 
 		if err != nil {
@@ -158,19 +156,15 @@ func (h *HttpClient) DELETE(c *fiber.Ctx, url string, requestBody interface{}, r
 	})
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(NewCallError(url, err, resp))
+		return nil, err
 	}
 
-	return c.Status(resp.StatusCode()).JSON(buffer)
+	return resp, nil
 }
 
 func (h *HttpClient) getRequest(router config.Router) *resty.Request {
-	request := h.client.R().EnableTrace()
-	setRequest(request, router)
-	return request
-}
+	req := h.client.R().EnableTrace()
 
-func setRequest(req *resty.Request, router config.Router) {
 	if router.Auth != nil {
 		if len(router.Auth.Schema) != 0 {
 			req.SetAuthScheme(router.Auth.Schema)
@@ -182,4 +176,6 @@ func setRequest(req *resty.Request, router config.Router) {
 	if router.Header != nil {
 		req.SetHeaders(router.Header)
 	}
+
+	return req
 }

@@ -32,6 +32,11 @@ func NewPut(
 
 func (p put) handleRequest(c *fiber.Ctx) error {
 	path := p.cfg.Path
-	apiResult := p.client.PUT(c, path, c.Request().Body(), p.cfg)
-	return apiResult
+	apiResult, err := p.client.PUT(path, c.Request().Body(), p.cfg)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(client.NewCallError(path, err, apiResult))
+	}
+
+	return c.Status(apiResult.StatusCode()).JSON(string(apiResult.Body()))
 }

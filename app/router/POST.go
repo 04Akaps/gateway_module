@@ -31,6 +31,11 @@ func NewPost(
 
 func (p post) handleRequest(c *fiber.Ctx) error {
 	path := p.cfg.Path
-	apiResult := p.client.POST(c, path, c.Request().Body(), p.cfg)
-	return apiResult
+	apiResult, err := p.client.POST(path, c.Request().Body(), p.cfg)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(client.NewCallError(path, err, apiResult))
+	}
+
+	return c.Status(apiResult.StatusCode()).JSON(string(apiResult.Body()))
 }

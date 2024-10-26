@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	_not_supported_type     = "Failed to find api type"
-	_failed_to_send_get_api = "Failed to send api"
+	_not_supported_type = "Failed to find api type"
 )
 
 /*
@@ -97,29 +96,25 @@ func (g get) queryType(c *fiber.Ctx) error {
 	urlBuilder.WriteString(path)
 	fullUrl := urlBuilder.String()
 
-	apiResult := g.client.GET(c, fullUrl, g.cfg)
-	return apiResult
+	apiResult, err := g.client.GET(fullUrl, g.cfg)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(client.NewCallError(fullUrl, err, apiResult))
+	}
+
+	return c.Status(apiResult.StatusCode()).JSON(string(apiResult.Body()))
 }
 
 func (g get) urlType(c *fiber.Ctx) error {
-
 	var urlBuilder strings.Builder
-	urlBuilder.WriteString("/")
-
-	r := c.Route()
-	params := r.Params
-
-	for i, p := range params {
-		value := c.Params(p)
-		urlBuilder.WriteString(value + "/")
-
-		if i < len(params)-1 {
-			urlBuilder.WriteString("/")
-		}
-	}
-
+	urlBuilder.WriteString(string(c.Request().URI().Path()))
 	fullUrl := urlBuilder.String()
 
-	apiResult := g.client.GET(c, fullUrl, g.cfg)
-	return apiResult
+	apiResult, err := g.client.GET(fullUrl, g.cfg)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(client.NewCallError(fullUrl, err, apiResult))
+	}
+
+	return c.Status(apiResult.StatusCode()).JSON(string(apiResult.Body()))
 }

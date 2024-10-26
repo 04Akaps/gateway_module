@@ -1,0 +1,17 @@
+app:
+  - app:
+      port: "8080"
+      version: "1.0.0"
+      name: "MyApp"
+    http:
+      base_url: "http://localhost:3000"
+      router:
+        - method: "GET"
+          get_type: "query"
+          path: "/api/query"
+          variable:
+            - "name"
+            - "age"
+        - method: "GET"
+          get_type: "url"
+          path: "/api/user/:?"

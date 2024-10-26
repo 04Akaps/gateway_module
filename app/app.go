@@ -28,11 +28,13 @@ func NewApp(
 
 func (a App) onStart(c context.Context) error {
 
-	for key, r := range a.router {
-		if err := r.Run(); err != nil {
-			log.Log.Panic("Failed start server", zap.String("key", key))
+	go func() {
+		for key, r := range a.router {
+			if err := r.Run(); err != nil {
+				log.Log.Panic("Failed start server", zap.String("key", key))
+			}
 		}
-	}
+	}()
 
 	return nil
 }

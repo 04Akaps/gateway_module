@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	yamlPath = flag.String("yamlPath", "./deploy_sample.yaml", "config path")
+	yamlPath = flag.String("yamlPath", "./deploy.yaml", "config path")
 )
 
 func init() {
@@ -30,7 +30,7 @@ var Producer = fx.Module(
 		clients := make(map[string]kafka.Producer, len(cfg.App))
 
 		for _, app := range cfg.App {
-			clients[app.App.Name] = kafka.NewProducer(*app.Producer)
+			clients[app.App.Name] = kafka.NewProducer(app.Producer)
 		}
 
 		return clients

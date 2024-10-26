@@ -31,6 +31,11 @@ func NewDelete(
 
 func (d delete) handleRequest(c *fiber.Ctx) error {
 	path := d.cfg.Path
-	apiResult := d.client.DELETE(c, path, c.Request().Body(), d.cfg)
-	return apiResult
+	apiResult, err := d.client.DELETE(path, c.Request().Body(), d.cfg)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(client.NewCallError(path, err, apiResult))
+	}
+
+	return c.Status(apiResult.StatusCode()).JSON(string(apiResult.Body()))
 }

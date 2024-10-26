@@ -16,9 +16,6 @@ type Producer struct {
 	producer *kafka.Producer
 }
 
-//BatchSize int64  `yaml:"batch_size"`
-//BatchTime int64  `yaml:"batch_time"`
-
 func NewProducer(
 	config config.Producer,
 ) Producer {
@@ -37,7 +34,6 @@ func NewProducer(
 	}
 
 	producer, err := kafka.NewProducer(conf)
-
 	if err != nil {
 		log.Log.Panic("Failed to create producer", zap.Error(err))
 	}

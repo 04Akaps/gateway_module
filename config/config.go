@@ -18,8 +18,8 @@ type App struct {
 		Port    string `yaml:"port"`
 	} `yaml:"app"`
 
-	Producer *Producer `yaml:"kafka"`
-	Http     HttpCfg   `yaml:"http"`
+	Producer Producer `yaml:"kafka"`
+	Http     HttpCfg  `yaml:"http"`
 }
 
 func NewCfg(path string) Config {
